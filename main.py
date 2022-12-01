@@ -3,13 +3,16 @@ import shutil
 from InjectionManager import InjectionManager
 from utils.Timer import Timer
 
+
 # Config
 sequence_folder = os.path.join(os.getcwd(), "input", "sequence_01")
-failures = ["deadPixels", "condensation"]
+failures = ["banding", "condensation"]
 
-# Init
+# Cleanup
 shutil.rmtree(os.path.join(os.getcwd(), "output"))
 os.mkdir(os.path.join(os.getcwd(), "output"))
+
+# Init
 IM = InjectionManager()
 
 

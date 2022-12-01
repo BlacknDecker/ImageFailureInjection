@@ -48,7 +48,7 @@ class InjectionManager:
             "banding": 2,
             "lensBreakage": 15,
             "chromaticAberration": 1,
-                "condensation": 3,
+            "condensation": 3,
             "deadPixels": 7,
             "dirt": 36,
             "grayscale": 1,

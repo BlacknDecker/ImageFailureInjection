@@ -13,7 +13,6 @@ class FilePathManager:
 
     @staticmethod
     def addInjectionName(orig_path, injection_name):
-        # return FilePathManager.getFileName(orig_path) + "." + FilePathManager.getFileExtension(orig_path)
-        return FilePathManager.getFileName(orig_path) + injection_name + "." + FilePathManager.getFileExtension(orig_path)
+        return FilePathManager.getFileName(orig_path) + "_" + injection_name + "." + FilePathManager.getFileExtension(orig_path)
 
 

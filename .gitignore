@@ -3,3 +3,8 @@ out
 __pycache__
 injectors/lensDirt/*
 !injectors/lensDirt/LensDirt-1.png
+test_injectors.py
+
+input/*
+!input/sequence_01
+output/*

@@ -11,7 +11,9 @@ from utils.FilePathManager import FilePathManager
 class ChromaticAberrationInjector:
 
     def __init__(self):
-        pass
+        self.failure_name = "chromaticAberration"
+        # Save n of variants
+        self.variants = 1
 
     def inject(self, original_img_path, out_folder):
         logging.info(f"Processing: {FilePathManager.getFileName(original_img_path)}")
@@ -19,13 +21,12 @@ class ChromaticAberrationInjector:
         # Ensure width and height are odd numbers
         standardized_image = original_img.copy()
         if (original_img.size[0] % 2 == 0):
-            standardized_image = original_img.crop((0, 0, original_img.size[0] - 1, original_img.size[1]))
+            standardized_image = standardized_image.crop((0, 0, standardized_image.size[0] - 1, standardized_image.size[1]))
             standardized_image.load()
         if (original_img.size[1] % 2 == 0):
-            standardized_image = original_img.crop((0, 0, original_img.size[0], original_img.size[1] - 1))
+            standardized_image = standardized_image.crop((0, 0, standardized_image.size[0], standardized_image.size[1] - 1))
             standardized_image.load()
         standardized_image = standardized_image.convert("RGB")
-
         # Processing image
         logging.info(f"Appling Chromatic Aberration")
         chromatic_patch = self.__add_chromatic(standardized_image, strength=2, no_blur=False)
@@ -33,7 +34,8 @@ class ChromaticAberrationInjector:
         # Save
         new_name = FilePathManager.addInjectionName(original_img_path, f"_ChromaticAberration".replace(".", "-"))
         logging.info(f"Saving: {new_name}")
-        original_img.save(os.path.join(out_folder, new_name))
+        out_dir = FilePathManager.getVariantOutputFolder(out_folder, 0)
+        original_img.save(os.path.join(out_dir, new_name))
 
     def __cartesian_to_polar(self, data: np.ndarray) -> np.ndarray:
         """Returns the polar form of <data>

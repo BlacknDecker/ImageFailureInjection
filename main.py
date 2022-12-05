@@ -1,3 +1,4 @@
+import logging
 import os
 import shutil
 from InjectionManager import InjectionManager
@@ -14,7 +15,7 @@ os.mkdir(os.path.join(os.getcwd(), "output"))
 
 # Init
 IM = InjectionManager()
-
+logging.basicConfig(format='%(asctime)s %(message)s', level=logging.INFO)
 
 # Process
 with Timer("Failure Injection"):

@@ -42,24 +42,6 @@ class InjectionManager:
             "flare": FlareInjector()
             # "randomRain": RandomRainInjector()
         }
-        self.failure_variants = {
-            "brightness": 8,
-            "blur": 29,
-            "banding": 2,
-            "lensBreakage": 15,
-            "chromaticAberration": 1,
-            "condensation": 3,
-            "deadPixels": 7,
-            "dirt": 36,
-            "grayscale": 1,
-            "ice": 4,
-            "nodemos": 1,
-            "noise": 10,
-            "rain": 5,
-            "sharpness": 6,
-            "flare": 1
-            # "randomRain": RandomRainInjector()
-        }
 
     def processSequence(self, sequence_folder, failures=None):
         # Get sequence name (folder name)
@@ -79,27 +61,7 @@ class InjectionManager:
             # create failure folder
             failure_folder = os.path.join(out_path, failure)
             os.mkdir(failure_folder)
-            variants_folder = []
-            for i in range(self.failure_variants[failure]):
-                var_folder = os.path.join(failure_folder, f"variant_{i}")
-                os.mkdir(var_folder)
-                variants_folder.append(var_folder)
             # process frames
             for frame in frames_path:
                 # process frame
                 self.injectors[failure].inject(frame, failure_folder)
-                # divide failure variations into subfolders
-                processed_frames = []
-                for filename in os.listdir(failure_folder):
-                    if filename.endswith(".png"):
-                        processed_frames.append(filename)
-                if len(processed_frames) != self.failure_variants[failure]:
-                    raise Exception("Failure Variants Mismatch!")
-                else:
-                    # move to folder
-                    for i in range(self.failure_variants[failure]):
-                        src_p = os.path.join(failure_folder, processed_frames[i])
-                        original_framename = processed_frames[i].split("__")[0] + "." + processed_frames[i].split(".")[-1]
-                        dst_p = os.path.join(variants_folder[i], original_framename)
-                        shutil.move(src_p, dst_p)
-

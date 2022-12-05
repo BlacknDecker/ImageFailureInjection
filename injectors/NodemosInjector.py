@@ -10,13 +10,15 @@ from utils.FilePathManager import FilePathManager
 class NodemosInjector:
 
     def __init__(self):
-        pass
+        self.failure_name = "nodemos"
+        # Save n of variants
+        self.variants = 1
 
     def inject(self, original_img_path, out_folder):
         # open image
         logging.info(f"Processing: {FilePathManager.getFileName(original_img_path)}")
         original = cv2.imread(original_img_path)
-        logging.info(f"Appling Nodemos")
+        logging.info(f"Applying Nodemos")
         width, height, _ = original.shape
         # Create target array, twice the size of the original image
         resArray = zeros((2 * width, 2 * height, 3), dtype=uint8)
@@ -35,5 +37,6 @@ class NodemosInjector:
         injected = Image.fromarray(resArray, "RGB")
         new_name = FilePathManager.addInjectionName(original_img_path, f"_Nodemos")
         logging.info(f"Saving: {new_name}")
-        injected.save(os.path.join(out_folder, new_name))
+        out_dir = FilePathManager.getVariantOutputFolder(out_folder, 0)
+        injected.save(os.path.join(out_dir, new_name))
 

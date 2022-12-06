@@ -33,7 +33,7 @@ class InjectionManager:
             "condensation": CondensationInjector(os.path.join(os.getcwd(), "injectors", "condensation")),
             "deadPixels": DeadPixelsInjector(),
             "dirt": DirtInjector(os.path.join(os.getcwd(), "injectors", "lensDirt")),
-            "grayscale": GrayscaleInjector(),
+            # "grayscale": GrayscaleInjector(),
             "ice": IceInjector(os.path.join(os.getcwd(), "injectors", "ice")),
             "nodemos": NodemosInjector(),
             "noise": NoiseInjector(),

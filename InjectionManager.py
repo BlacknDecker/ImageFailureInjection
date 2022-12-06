@@ -63,5 +63,7 @@ class InjectionManager:
             os.mkdir(failure_folder)
             # process frames
             for frame in frames_path:
-                # process frame
-                self.injectors[failure].inject(frame, failure_folder)
+                try:
+                    self.injectors[failure].inject(frame, failure_folder)
+                except Exception as e:
+                    logging.exception(f"Failed to Inject {failure.upper()} into frame: {frame}")

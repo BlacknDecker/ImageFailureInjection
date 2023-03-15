@@ -16,3 +16,6 @@ sequence_injectors/patches/condensation/*
 sequence_injectors/patches/dirt/*
 sequence_injectors/patches/ice/*
 sequence_injectors/patches/rain/*
+
+experiment_runner/test_env
+test_*

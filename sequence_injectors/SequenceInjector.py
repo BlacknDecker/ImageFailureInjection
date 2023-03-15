@@ -61,6 +61,8 @@ class SequenceInjector:
         return Image.open(frame_path).convert("RGBA")
 
     def __markFramesToInject(self, loading_frames: Dict[Future, FutureInfo], injection_position: int) -> None:
+        if injection_position > len(loading_frames.values()):
+            raise IndexError("The injection position is bigger than the sequence length!")
         for frame_info in loading_frames.values():
             if frame_info["position"] >= injection_position:
                 frame_info["inject"] = True

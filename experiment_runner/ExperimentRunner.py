@@ -44,7 +44,8 @@ class ExperimentRunner:
                 ongoing_status.error_message = str(e)
                 return ongoing_status
         else:
-            ongoing_status.error_message = "Experiment workload is not available!"
+            if ongoing_status.error_message == "":
+                ongoing_status.error_message = "Experiment workload is not available!"
             return ongoing_status
 
     def getResultsFolder(self) -> Path:

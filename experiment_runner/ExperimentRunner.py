@@ -1,4 +1,5 @@
 import fileinput
+import subprocess
 from pathlib import Path
 
 from experiment_runner.EnvironmentParameters import EnvironmentParameters
@@ -80,9 +81,19 @@ class ExperimentRunner:
         # Done
 
     def __launchDocker(self, ongoing_status: ExperimentStatus) -> ExperimentStatus:
-        # FIXME: implement
-        ongoing_status.run_status = True
-        ongoing_status.result_folder = self.getResultsFolder()
+        cmd = f'docker run --rm -v "{self.env.volume_root_directory}":/inj_data/ --gpus all odometry'
+        try:
+            completed_process = subprocess.run(cmd, stderr=subprocess.PIPE, shell=True, text=True)
+        except Exception as e:
+            ongoing_status.error_message = str(e)
+        else:
+            # Check for errors in the execution
+            if completed_process.stderr:
+                ongoing_status.error_message = completed_process.stderr
+            else:
+                # Execution completed
+                ongoing_status.run_status = True
+                ongoing_status.result_folder = self.getResultsFolder()
         return ongoing_status
 
 

@@ -58,7 +58,7 @@ class SequenceInjector:
         return loading
 
     def __loadFrame(self, frame_path: Path) -> Image:
-        return Image.open(frame_path).convert("RGBA")
+        return Image.open(frame_path)
 
     def __markFramesToInject(self, loading_frames: Dict[Future, FutureInfo], injection_position: int) -> None:
         if injection_position > len(loading_frames.values()):

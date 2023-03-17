@@ -28,6 +28,7 @@ class SequenceInjector:
         for frame_name in os.listdir(self.frames_dir):
             if frame_name.endswith(".png"):
                 self.frames_name.append(str(frame_name))
+        self.frame_original_colormode = ""
         # Injector Utilities
         self.patch_loader = PatchLoader(patch_src)
 
@@ -58,7 +59,7 @@ class SequenceInjector:
         return loading
 
     def __loadFrame(self, frame_path: Path) -> Image:
-        return Image.open(frame_path)
+        return Image.open(frame_path).convert("RGBA")
 
     def __markFramesToInject(self, loading_frames: Dict[Future, FutureInfo], injection_position: int) -> None:
         if injection_position > len(loading_frames.values()):
@@ -119,7 +120,7 @@ class SequenceInjector:
         return saving
 
     def __saveFrame(self, frame: Image.Image, frame_path: Path) -> None:
-        frame.save(frame_path)
+        frame.convert("L").save(frame_path)
 
     def __getInjector(self, failure_type: str) -> PatchInjector:
         return PatchInjector(failure_type)  # FIXME: choose injector based on failure_type

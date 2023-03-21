@@ -10,7 +10,9 @@ sequences_directory = base_directory / "dataset" / "sequences"
 patch_root_directory = base_directory / "patches"
 # Get info
 sequences = [seq for seq in sequences_directory.iterdir() if seq.is_dir()]
+sequences.sort()
 patches = [patch for patch in patch_root_directory.iterdir() if patch.is_dir()]
+patches.sort()
 
 # Setup
 WARMUP_FRAMES = 10
@@ -37,14 +39,16 @@ for sequence in sequences:
                     "sequence_name": f"{sequence.name}",
                     "failure_type": f"{patch.name}",
                     "failure_variant": variant,
+                    "patch_name": f"{list(patch.glob('*.png'))[variant].name}",
                     "injection_position": WARMUP_FRAMES + injection_point
                 })
 
 # Save
 content = json.dumps(experiments, indent=2, default=str)
-with open("test_env/experiments_config.json", "w") as f:
+save_path = base_directory / "experiments_config.json"
+with open(save_path, "w") as f:
     f.write(content)
 
-print(content)
+# print(content)
 print(f"TOTAL EXPERIMENTS: {len(experiments)}")
 

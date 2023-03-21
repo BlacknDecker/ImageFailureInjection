@@ -82,6 +82,7 @@ class SequenceInjector:
         # Process frames
         for future_frame in as_completed(loading_frames):
             frame_info = loading_frames[future_frame]
+            print(frame_info)
             processing_frame = self.__processFrame(executor, future_frame, frame_info, injector, patch)
             # Add the future + the info
             processing.update(processing_frame)

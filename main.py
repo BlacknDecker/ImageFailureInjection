@@ -1,23 +1,40 @@
-import logging
-import os
-import shutil
-from InjectionManager import InjectionManager
+import json
+from pathlib import Path
+
+from experiment_runner.EnvironmentParameters import EnvironmentParameters
+from experiment_runner.ExperimentsController import ExperimentsController
 from utils.Timer import Timer
 
+# SETUP
+env = EnvironmentParameters()
+env.volume_root_directory = Path.cwd() / "experiment_runner" / "test_env"
+env.sequences_directory = env.volume_root_directory / "dataset" / "sequences"
+env.patch_root_directory = env.volume_root_directory / "patches"
 
-# Config
-sequence_folder = os.path.join(os.getcwd(), "input", "sequence_01")
-failures = ["banding", "condensation"]
+experiments_conf = env.volume_root_directory / "experiments_config.json"
 
-# Cleanup
-shutil.rmtree(os.path.join(os.getcwd(), "output"))
-os.mkdir(os.path.join(os.getcwd(), "output"))
+# Create Controller
+controller = ExperimentsController(env, experiments_conf)
 
-# Init
-IM = InjectionManager()
-logging.basicConfig(format='%(asctime)s %(message)s', level=logging.INFO)
+#### Run experiments #######
+# results = controller.runExperiments()
+# # Show results
+# for res in results:
+#     print(res)
 
-# Process
-with Timer("Failure Injection"):
-    IM.processSequence(sequence_folder, failures=failures)
+#### Prepare and Run #########
+with Timer("Experiments Preparation"):
+    prepared = controller.prepareExperiments(["exp_0023", "exp_0033", "exp_0045", "exp_0115", "exp_0119"])
+    # prepared = controller.prepareExperiments(["exp_0115"])
 
+# Show results
+print(" EXPERIMENTS PREPARATION ".center(40, "#"))
+for res in prepared:
+    print(res)
+
+# with Timer("Experiments Run"):
+#     results = controller.runPreparedExperiments(prepared)
+# # Show results
+# print(" EXPERIMENTS RUN ".center(40, "#"))
+# for res in results:
+#     print(res)

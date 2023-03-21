@@ -28,6 +28,7 @@ class SequenceInjector:
         for frame_name in os.listdir(self.frames_dir):
             if frame_name.endswith(".png"):
                 self.frames_name.append(str(frame_name))
+        self.frames_name.sort()
         self.frame_original_colormode = ""
         # Injector Utilities
         self.patch_loader = PatchLoader(patch_src)

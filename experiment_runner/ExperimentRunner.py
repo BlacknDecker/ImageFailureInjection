@@ -40,6 +40,7 @@ class ExperimentRunner:
         if self.__experimentWorkloadIsAvailable():
             try:
                 self.__editExperimentRunConfiguration()
+                self.__editKittiRunConfiguration()
                 return self.__launchDocker(ongoing_status)
             except Exception as e:
                 ongoing_status.error_message = str(e)
@@ -75,6 +76,22 @@ class ExperimentRunner:
             # Change experiment name
             if "camera=" in line:
                 run_config_lines[i] = f'camera="{self.experiment.experiment_name}"\n'
+        # Save edited run config
+        with open(run_config_path, "w") as f:
+            f.writelines(run_config_lines)
+        # Done
+
+    def __editKittiRunConfiguration(self):
+        run_config_path = self.env.volume_root_directory / "kitti_superpoint_supergluematch.yaml"
+        # Read configuration file
+        with open(run_config_path, "r") as f:
+            run_config_lines = f.readlines()
+        # Edit run config
+        for i in range(len(run_config_lines)):
+            line = run_config_lines[i]
+            # Change sequence
+            if "sequence:" in line:
+                run_config_lines[i] = f"  sequence: '{self.experiment.sequence}'\n"
         # Save edited run config
         with open(run_config_path, "w") as f:
             f.writelines(run_config_lines)

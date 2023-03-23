@@ -43,6 +43,19 @@ for sequence in sequences:
                     "injection_position": WARMUP_FRAMES + injection_point
                 })
 
+
+# Create Nominal Run
+for sequence in sequences:
+    experiments.append({
+        "experiment_name": f"{sequence.name}_nominal",
+        "sequence_name": f"{sequence.name}",
+        "failure_type": f"none",
+        "failure_variant": 0,
+        "patch_name": f"",
+        "injection_position": -1
+    })
+
+
 # Save
 content = json.dumps(experiments, indent=2, default=str)
 save_path = base_directory / "experiments_config.json"

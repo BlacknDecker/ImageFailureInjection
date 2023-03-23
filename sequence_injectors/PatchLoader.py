@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import List
+from typing import List, Optional
 
 from PIL import Image
 
@@ -10,6 +10,8 @@ class PatchLoader:
         self.patches_dir = patch_src
 
     def loadPatch(self, failure_type: str, failure_variant: int, calibration_frame: Image.Image) -> Image.Image:
+        if failure_type == "none":
+            return Image.new("RGBA", calibration_frame.size)    # Blank image
         if self.__patchExists(failure_type, failure_variant):
             patch_dir = self.patches_dir / failure_type
             patch_variants_path = list(patch_dir.glob("*.png"))

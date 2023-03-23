@@ -37,7 +37,8 @@ class SequenceInjector:
                        failure_variant: int) -> None:
         with ThreadPoolExecutor() as executor:
             loading_frames = self.__loadFrames(executor)
-            self.__markFramesToInject(loading_frames, injection_position)
+            if injection_position >= 0:
+                self.__markFramesToInject(loading_frames, injection_position)
             processing_frames = self.__processFrames(executor, loading_frames, failure_type, failure_variant)
             # Save
             experiment_dir = self.__createExperimentFolder(experiment_name)

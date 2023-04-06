@@ -1,4 +1,5 @@
 import fileinput
+import shutil
 import subprocess
 from pathlib import Path
 
@@ -36,12 +37,15 @@ class ExperimentRunner:
             status.prepared = True
         return status
 
-    def run(self, ongoing_status: ExperimentStatus) -> ExperimentStatus:
+    def run(self, ongoing_status: ExperimentStatus, remove_workload=False) -> ExperimentStatus:
         if self.__experimentWorkloadIsAvailable():
             try:
                 self.__editExperimentRunConfiguration()
                 self.__editKittiRunConfiguration()
-                return self.__launchDocker(ongoing_status)
+                run_status = self.__launchDocker(ongoing_status)
+                if remove_workload:
+                    self.__freeWorkload()
+                return run_status
             except Exception as e:
                 ongoing_status.error_message = str(e)
                 return ongoing_status
@@ -113,5 +117,15 @@ class ExperimentRunner:
                 ongoing_status.result_folder = self.getResultsFolder()
         return ongoing_status
 
-
-
+    def __freeWorkload(self):
+        if self.__experimentWorkloadIsAvailable():
+            # Get folders
+            results_folder = self.getResultsFolder()
+            sequence_directory = self.env.sequences_directory / self.experiment.sequence
+            experiment_directory = sequence_directory / self.experiment.experiment_name
+            # save last frame (which is for sure injected) in the results folder as a sample
+            frames = list(experiment_directory.glob("*.png"))
+            frames.sort()
+            shutil.copy(frames[-1], results_folder)
+            # Delete workload folder
+            shutil.rmtree(experiment_directory)

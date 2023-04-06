@@ -32,13 +32,13 @@ class ExperimentsController:
             preparation_status.append(status)
         return preparation_status
 
-    def runPreparedExperiments(self, ongoing_experiments: List[ExperimentStatus]) -> List[ExperimentStatus]:
+    def runPreparedExperiments(self, ongoing_experiments: List[ExperimentStatus], remove_workload=False) -> List[ExperimentStatus]:
         # Run the experiments
         run_status = []
         for ongoing_status in ongoing_experiments:
             experiment = self.__getExperimentByName(ongoing_status.experiment_name)
             runner = ExperimentRunner(self.env, experiment)
-            status = runner.run(ongoing_status)
+            status = runner.run(ongoing_status, remove_workload)
             run_status.append(status)
         return run_status
 
@@ -48,7 +48,7 @@ class ExperimentsController:
         # Run selected experiments
         experiments_status = []
         for experiment in experiments:
-            experiments_status.append(self.__runExperiment(experiment))
+            experiments_status.append(self.__runExperiment(experiment, remove_workload=True))
         return experiments_status
 
     ### Utils ###
@@ -86,10 +86,10 @@ class ExperimentsController:
     def __getExperimentByName(self, experiment_name: str) -> ExperimentParameters:
         return next(filter(lambda x: x.experiment_name == experiment_name, self.experiments))
 
-    def __runExperiment(self, experiment: ExperimentParameters) -> ExperimentStatus:
+    def __runExperiment(self, experiment: ExperimentParameters, remove_workload: bool) -> ExperimentStatus:
         runner = ExperimentRunner(self.env, experiment)
         preparation_status = runner.createExperimentWorkload()
-        run_status = runner.run(preparation_status)
+        run_status = runner.run(preparation_status, remove_workload)
         # Return result
         return run_status
 

@@ -121,13 +121,16 @@ class ExperimentRunner:
     def __freeWorkload(self):
         if self.__experimentWorkloadIsAvailable():
             # Get folders
-            results_folder = self.getResultsFolder()
+            results_folder = self.env.volume_root_directory / "results"
             sequence_directory = self.env.sequences_directory / self.experiment.sequence
             experiment_directory = sequence_directory / self.experiment.experiment_name
             # save last frame (which is for sure injected) in the results folder as a sample
             frames = list(experiment_directory.glob("*.png"))
             frames.sort()
             if os.path.isdir(results_folder):
-                shutil.copy(frames[-1], results_folder)
+                sample_folder = results_folder/"experiment_samples"
+                os.makedirs(sample_folder, exist_ok=True)
+                sample_name = f"{self.experiment.sequence}_{self.experiment.experiment_name}_frame_{frames[-1].parts[-1]}"
+                shutil.copyfile(frames[-1], sample_folder/sample_name)
             # Delete workload folder
             shutil.rmtree(experiment_directory)

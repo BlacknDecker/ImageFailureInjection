@@ -1,4 +1,5 @@
 import fileinput
+import os
 import shutil
 import subprocess
 from pathlib import Path
@@ -126,6 +127,7 @@ class ExperimentRunner:
             # save last frame (which is for sure injected) in the results folder as a sample
             frames = list(experiment_directory.glob("*.png"))
             frames.sort()
-            shutil.copy(frames[-1], results_folder)
+            if os.path.isdir(results_folder):
+                shutil.copy(frames[-1], results_folder)
             # Delete workload folder
             shutil.rmtree(experiment_directory)

@@ -62,6 +62,8 @@ class ResultsManager:
         status_df.to_excel(writer, sheet_name=f"status")
         conf_df.to_excel(writer, sheet_name=f"config")
         metric_df.to_excel(writer, sheet_name=f"metrics")
+        # Add formatting
+        self.__addExcelConditionalFormatting(writer, "status", len(status_s))
         # Save
         writer.close()
         ### Create CSV ###
@@ -109,3 +111,18 @@ class ResultsManager:
             }
         # save
         return metrics
+
+    def __addExcelConditionalFormatting(self, writer: pd.ExcelWriter, sheet_name:str, sheet_len:int):
+        workbook = writer.book
+        worksheet = writer.sheets[sheet_name]
+        # Define format
+        format_yellow = workbook.add_format({'bg_color': '#FFEB9C',
+                                             'font_color': '#9C6500'})
+        # Status - RUN ERROR
+        worksheet.conditional_format(f"E2:E{sheet_len+1}",
+                                     {
+                                         'type': 'cell',
+                                         'criteria': '==',
+                                         'value': False,
+                                         'format': format_yellow
+                                     })

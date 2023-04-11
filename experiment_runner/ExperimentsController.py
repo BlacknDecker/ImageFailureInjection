@@ -6,6 +6,8 @@ from experiment_runner.EnvironmentParameters import EnvironmentParameters
 from experiment_runner.ExperimentParameters import ExperimentParameters
 from experiment_runner.ExperimentRunner import ExperimentRunner
 from experiment_runner.ExperimentStatus import ExperimentStatus
+from utils.Timer import Timer
+from utils.TimerOneLine import TimerOneLine
 
 
 class ExperimentConfig(TypedDict):
@@ -38,7 +40,12 @@ class ExperimentsController:
         for ongoing_status in ongoing_experiments:
             experiment = self.__getExperimentByName(ongoing_status.experiment_name)
             runner = ExperimentRunner(self.env, experiment)
-            status = runner.run(ongoing_status, remove_workload)
+            # Run experiment
+            with TimerOneLine(f"Run: {ongoing_status.experiment_name}"):
+                status = runner.run(ongoing_status, remove_workload)
+            # Save results
+            with open(runner.getResultsFolder()/"experiment_results.txt", "w") as f:
+                f.write(str(status))
             run_status.append(status)
         return run_status
 
@@ -89,7 +96,12 @@ class ExperimentsController:
     def __runExperiment(self, experiment: ExperimentParameters, remove_workload: bool) -> ExperimentStatus:
         runner = ExperimentRunner(self.env, experiment)
         preparation_status = runner.createExperimentWorkload()
-        run_status = runner.run(preparation_status, remove_workload)
+        # Run experiment
+        with TimerOneLine(f"Run: {preparation_status.experiment_name}"):
+            run_status = runner.run(preparation_status, remove_workload)
+        # Save results
+        with open(runner.getResultsFolder() / "experiment_results.txt", "w") as f:
+            f.write(str(run_status))
         # Return result
         return run_status
 

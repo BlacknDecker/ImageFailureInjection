@@ -115,7 +115,8 @@ class ExperimentRunner:
             else:
                 # Execution completed
                 ongoing_status.run_status = True
-                ongoing_status.result_folder = self.getResultsFolder()
+        # Always add the results path
+        ongoing_status.result_folder = self.getResultsFolder()
         return ongoing_status
 
     def __freeWorkload(self):

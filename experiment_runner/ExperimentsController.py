@@ -65,12 +65,7 @@ class ExperimentsController:
         configs = self.__getExperimentsConfig(config_path)
         experiments = []
         for exp_conf in configs:
-            ep = ExperimentParameters()
-            ep.experiment_name = exp_conf["experiment_name"]
-            ep.sequence = exp_conf["sequence_name"]
-            ep.failure_type = exp_conf["failure_type"]
-            ep.failure_variant = exp_conf["failure_variant"]
-            ep.injection_position = exp_conf["injection_position"]
+            ep = ExperimentParameters(exp_conf)
             experiments.append(ep)
         return experiments
 

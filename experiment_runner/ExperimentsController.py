@@ -45,8 +45,8 @@ class ExperimentsController:
             with TimerOneLine(f"Run: {ongoing_status.experiment_name}"):
                 status = runner.run(ongoing_status, remove_workload)
             # Save results
-            with open(self.experiments_log_folder/f"{status.experiment_name}.status", "w") as f:
-                f.write(str(status))
+            with open(self.experiments_log_folder/f"{status.experiment_name}.json", "w") as f:
+                f.write(json.dumps(status.todict(), indent=4, default=str))
             run_status.append(status)
         return run_status
 
@@ -101,8 +101,8 @@ class ExperimentsController:
         with TimerOneLine(f"Run: {preparation_status.experiment_name}"):
             run_status = runner.run(preparation_status, remove_workload)
         # Save results
-        with open(self.experiments_log_folder/f"{run_status.experiment_name}.status", "w") as f:
-            f.write(str(run_status))
+        with open(self.experiments_log_folder/f"{run_status.experiment_name}_status.json", "w") as f:
+            f.write(json.dumps(run_status.todict(), indent=4, default=str))
         # Return result
         return run_status
 

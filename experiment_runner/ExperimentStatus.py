@@ -9,6 +9,7 @@ class ExperimentStatus:
         self.prepared = False
         self.run_status = False
         self.result_folder: Optional[Path] = None
+        self.error_type = ""
         self.error_message = ""
 
     def isPrepared(self):
@@ -27,7 +28,16 @@ class ExperimentStatus:
                 return es
         # In case of failure show error message
         if len(self.error_message) > 0:
-            es += f"Error: {self.error_message}\n"
+            es += f"Error Type: {self.error_type}\n"
+            es += f"=== Error Message ===\n{self.error_message}\n"
         return es
 
-
+    def todict(self) -> dict:
+        return {
+            "experiment_name": self.experiment_name,
+            "prepared": self.prepared,
+            "run_status": self.run_status,
+            "result_folder": self.result_folder,
+            "error_type": self.error_type,
+            "error_message": self.error_message
+        }

@@ -112,6 +112,10 @@ class ExperimentRunner:
             # Check for errors in the execution
             error_data = completed_process.stderr
             if "Traceback (most recent call last):" in error_data:
+                ongoing_status.error_type = "Exception"
+                ongoing_status.error_message = error_data
+            elif "docker: Error" in error_data:
+                ongoing_status.error_type = "DockerError"
                 ongoing_status.error_message = error_data
             else:
                 # Execution completed

@@ -110,8 +110,9 @@ class ExperimentRunner:
             ongoing_status.error_message = str(e)
         else:
             # Check for errors in the execution
-            if completed_process.stderr:
-                ongoing_status.error_message = completed_process.stderr
+            error_data = completed_process.stderr
+            if "Traceback (most recent call last):" in error_data:
+                ongoing_status.error_message = error_data
             else:
                 # Execution completed
                 ongoing_status.run_status = True

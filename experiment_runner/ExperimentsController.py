@@ -23,6 +23,7 @@ class ExperimentsController:
     def __init__(self, environment: EnvironmentParameters, experiments_config: Path):
         self.env = environment
         self.experiments = self.__parseConfig(experiments_config)
+        self.experiments_log_folder = self.env.volume_root_directory/"results"/"run_logs"
 
     def prepareExperiments(self, experiment_names: List[str] = None) -> List[ExperimentStatus]:
         experiments = self.__selectExperiments(experiment_names)
@@ -44,7 +45,7 @@ class ExperimentsController:
             with TimerOneLine(f"Run: {ongoing_status.experiment_name}"):
                 status = runner.run(ongoing_status, remove_workload)
             # Save results
-            with open(runner.getResultsFolder()/"experiment_results.txt", "w") as f:
+            with open(self.experiments_log_folder/f"{status.experiment_name}.status", "w") as f:
                 f.write(str(status))
             run_status.append(status)
         return run_status
@@ -100,7 +101,7 @@ class ExperimentsController:
         with TimerOneLine(f"Run: {preparation_status.experiment_name}"):
             run_status = runner.run(preparation_status, remove_workload)
         # Save results
-        with open(runner.getResultsFolder() / "experiment_results.txt", "w") as f:
+        with open(self.experiments_log_folder/f"{run_status.experiment_name}.status", "w") as f:
             f.write(str(run_status))
         # Return result
         return run_status

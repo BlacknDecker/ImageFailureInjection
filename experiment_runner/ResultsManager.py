@@ -19,17 +19,19 @@ class ResultsManager:
     def createSummary(self, experiment_results: List[ExperimentStatus]) -> None:
         status_s = []
         conf_s = []
+        metric_s = []
         # Collect Info
         for exp_status in experiment_results:
             exp_config = self.__getExperimentConfig(exp_status.experiment_name)
             # STATUS
+            log_path = self.experiments_log_folder / f"{exp_status.experiment_name}_status.json"
             status_row = {
                 "experiment": exp_status.experiment_name,
                 "sequence": exp_config.sequence,
                 "prepared": exp_status.prepared,
                 "run": exp_status.run_status,
                 "error_type": exp_status.error_type,
-                "log": self.experiments_log_folder / f"{exp_status.experiment_name}_status.json",
+                # "log": log_path,
                 "notes": ""
             }
             status_s.append(status_row)
@@ -44,21 +46,28 @@ class ResultsManager:
             }
             conf_s.append(conf_row)
             # METRICS
-            # TODO: retrieve experiment metrics
+            metric_row = {
+                "experiment": exp_status.experiment_name,
+            }
+            metric_row.update(self.__getMetrics(exp_status))
+            metric_s.append(metric_row)
         # Create DFs
         status_df = pd.DataFrame(status_s)
         conf_df = pd.DataFrame(conf_s)
+        metric_df = pd.DataFrame(metric_s)
         ## Create EXCEL ##
         summary_path = self.summary_folder / "summary.xlsx"
         writer = pd.ExcelWriter(summary_path, engine='xlsxwriter')
         # Sheets
         status_df.to_excel(writer, sheet_name=f"status")
         conf_df.to_excel(writer, sheet_name=f"config")
+        metric_df.to_excel(writer, sheet_name=f"metrics")
         # Save
         writer.close()
         ### Create CSV ###
         status_df.to_csv(self.summary_folder / "status_summary.csv", encoding='utf-8')
         conf_df.to_csv(self.summary_folder / "configuration_summary.csv", encoding='utf-8')
+        metric_df.to_csv(self.summary_folder / "metrics_summary.csv", encoding='utf-8')
         # Done
 
     ### UTILS ###
@@ -77,3 +86,26 @@ class ResultsManager:
 
     def __getExperimentConfig(self, experiment_name: str) -> ExperimentParameters:
         return next(filter(lambda x: x.experiment_name == experiment_name, self.experiment_configs))
+
+    def __getMetrics(self, exp_status: ExperimentStatus) -> dict:
+        m_path = exp_status.result_folder / "metrics.txt"
+        if m_path.exists():
+            with open(m_path, "r") as f:
+                lines = f.readlines()
+            # collect metrics
+            metrics = {}
+            for line in lines:
+                if "APE" in line:
+                    metrics["APE"] = line.split(":")[-1].strip().split(" ")[0]
+                elif "RPE Trans" in line:
+                    metrics["RPE_Trans"] = line.split(":")[-1].strip().split(" ")[0]
+                elif "RPE Rot" in line:
+                    metrics["RPE_Rot"] = line.split(":")[-1].strip().split(" ")[0]
+        else:
+            metrics = {
+                "APE": "",
+                "RPE_Trans": "",
+                "RPE_Rot": ""
+            }
+        # save
+        return metrics

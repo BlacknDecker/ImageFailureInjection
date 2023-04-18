@@ -101,45 +101,47 @@ class ResultsManager:
         return metrics
 
     def __getPosesMetrics(self, exp_status:ExperimentStatus) -> dict:
-        m_path = exp_status.result_folder / "metrics.txt"
-        if m_path.exists():
-            with open(m_path, "r") as f:
-                lines = f.readlines()
-            # collect metrics
-            metrics = {}
-            for line in lines:
-                if "APE" in line:
-                    metrics["APE"] = line.split(":")[-1].strip().split(" ")[0]
-                elif "RPE Trans" in line:
-                    metrics["RPE_Trans"] = line.split(":")[-1].strip().split(" ")[0]
-                elif "RPE Rot" in line:
-                    metrics["RPE_Rot"] = line.split(":")[-1].strip().split(" ")[0]
-        else:
-            metrics = {
-                "APE": "",
-                "RPE_Trans": "",
-                "RPE_Rot": ""
-            }
-        # save
+        metrics = {
+            "APE": "",
+            "RPE_Trans": "",
+            "RPE_Rot": ""
+        }
+        # Fill metrics
+        if exp_status.result_folder is not None:
+            m_path = exp_status.result_folder / "metrics.txt"
+            if m_path.exists():
+                with open(m_path, "r") as f:
+                    lines = f.readlines()
+                # collect metrics
+                metrics = {}
+                for line in lines:
+                    if "APE" in line:
+                        metrics["APE"] = line.split(":")[-1].strip().split(" ")[0]
+                    elif "RPE Trans" in line:
+                        metrics["RPE_Trans"] = line.split(":")[-1].strip().split(" ")[0]
+                    elif "RPE Rot" in line:
+                        metrics["RPE_Rot"] = line.split(":")[-1].strip().split(" ")[0]
+       # done
         return metrics
 
     def __getKeypointsMetrics(self, exp_status: ExperimentStatus) -> dict:
-        k_path = exp_status.result_folder / "keypoints.csv"
         metrics = {
             "kpts_rate": "",
             "kpts_match_rate": ""
         }
-        if k_path.exists():
-            with open(k_path, newline='') as csvfile:
-                reader = csv.DictReader(csvfile)
-                kpts_rate = []
-                kpts_match_rate = []
-                for row in reader:
-                    kpts_rate.append(int(row["exp_kpts"])/int(row["gt_kpts"]))
-                    kpts_match_rate.append(int(row["matches"])/int(row["gt_kpts"]))
-            # get the average
-            metrics["kpts_rate"] = str(round(mean(kpts_rate), 2))
-            metrics["kpts_match_rate"] = str(round(mean(kpts_match_rate), 2))
+        if exp_status.result_folder is not None:
+            k_path = exp_status.result_folder / "keypoints.csv"
+            if k_path.exists():
+                with open(k_path, newline='') as csvfile:
+                    reader = csv.DictReader(csvfile)
+                    kpts_rate = []
+                    kpts_match_rate = []
+                    for row in reader:
+                        kpts_rate.append(int(row["exp_kpts"])/int(row["gt_kpts"]))
+                        kpts_match_rate.append(int(row["matches"])/int(row["gt_kpts"]))
+                # get the average
+                metrics["kpts_rate"] = str(round(mean(kpts_rate), 2))
+                metrics["kpts_match_rate"] = str(round(mean(kpts_match_rate), 2))
         return metrics
 
     def __addExcelConditionalFormatting(self, writer: pd.ExcelWriter, sheet_name:str, sheet_len:int):

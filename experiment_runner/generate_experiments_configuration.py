@@ -23,8 +23,6 @@ INJECTION_POINTS_PERCENTAGES = [33, 66]
 experiments = []
 exp_counter = 1
 
-# DEBUG
-sequences = sequences[:1]
 
 # Generate experiments
 for sequence in sequences:

@@ -1,5 +1,7 @@
+import csv
 import json
 from pathlib import Path
+from statistics import mean
 from typing import List
 import pandas as pd
 
@@ -90,6 +92,15 @@ class ResultsManager:
         return next(filter(lambda x: x.experiment_name == experiment_name, self.experiment_configs))
 
     def __getMetrics(self, exp_status: ExperimentStatus) -> dict:
+        # Get POSES metrics
+        metrics = self.__getPosesMetrics(exp_status)
+        # Get KEYPOINTS metrics
+        kpts_metrics = self.__getKeypointsMetrics(exp_status)
+        # Collect and save
+        metrics.update(kpts_metrics)
+        return metrics
+
+    def __getPosesMetrics(self, exp_status:ExperimentStatus) -> dict:
         m_path = exp_status.result_folder / "metrics.txt"
         if m_path.exists():
             with open(m_path, "r") as f:
@@ -110,6 +121,25 @@ class ResultsManager:
                 "RPE_Rot": ""
             }
         # save
+        return metrics
+
+    def __getKeypointsMetrics(self, exp_status: ExperimentStatus) -> dict:
+        k_path = exp_status.result_folder / "keypoints.csv"
+        metrics = {
+            "kpts_rate": "",
+            "kpts_match_rate": ""
+        }
+        if k_path.exists():
+            with open(k_path, newline='') as csvfile:
+                reader = csv.DictReader(csvfile)
+                kpts_rate = []
+                kpts_match_rate = []
+                for row in reader:
+                    kpts_rate.append(int(row["exp_kpts"])/int(row["gt_kpts"]))
+                    kpts_match_rate.append(int(row["matches"])/int(row["gt_kpts"]))
+            # get the average
+            metrics["kpts_rate"] = str(round(mean(kpts_rate), 2))
+            metrics["kpts_match_rate"] = str(round(mean(kpts_match_rate), 2))
         return metrics
 
     def __addExcelConditionalFormatting(self, writer: pd.ExcelWriter, sheet_name:str, sheet_len:int):

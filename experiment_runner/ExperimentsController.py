@@ -1,4 +1,5 @@
 import json
+import os
 from pathlib import Path
 from typing import List, TypedDict, Union, Optional
 
@@ -24,6 +25,10 @@ class ExperimentsController:
         self.env = environment
         self.experiments = self.__parseConfig(experiments_config)
         self.experiments_log_folder = self.env.volume_root_directory/"results"/"run_logs"
+        self.summary_folder = self.env.volume_root_directory / "results" / "summary"
+        # Create summary and log folder if not exists
+        os.makedirs(self.experiments_log_folder, exist_ok=True)
+        os.makedirs(self.summary_folder, exist_ok=True)
 
     def prepareExperiments(self, experiment_names: List[str] = None) -> List[ExperimentStatus]:
         experiments = self.__selectExperiments(experiment_names)

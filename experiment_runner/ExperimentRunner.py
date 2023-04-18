@@ -53,8 +53,10 @@ class ExperimentRunner:
                     ongoing_status.error_message = str(e)
                     return ongoing_status
             else:
+                ongoing_status.error_type = "Configuration"
                 ongoing_status.updateErrorMessage("Nominal run results are not available! Run the nominal sequence first!")
         else:
+            ongoing_status.error_type = "Runtime"
             ongoing_status.updateErrorMessage("Experiment workload is not available!")
         return ongoing_status
 

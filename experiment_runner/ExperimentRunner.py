@@ -40,20 +40,23 @@ class ExperimentRunner:
 
     def run(self, ongoing_status: ExperimentStatus, remove_workload=False) -> ExperimentStatus:
         if self.__experimentWorkloadIsAvailable():
-            try:
-                self.__editExperimentRunConfiguration()
-                self.__editKittiRunConfiguration()
-                run_status = self.__launchDocker(ongoing_status)
-                if remove_workload:
-                    self.__freeWorkload()
-                return run_status
-            except Exception as e:
-                ongoing_status.error_message = str(e)
-                return ongoing_status
+            if self.__nominalResultsAreAvailable():
+                # Run the experiment
+                try:
+                    self.__editExperimentRunConfiguration()
+                    self.__editKittiRunConfiguration()
+                    run_status = self.__launchDocker(ongoing_status)
+                    if remove_workload:
+                        self.__freeWorkload()
+                    return run_status
+                except Exception as e:
+                    ongoing_status.error_message = str(e)
+                    return ongoing_status
+            else:
+                ongoing_status.updateErrorMessage("Nominal run results are not available! Run the nominal sequence first!")
         else:
-            if ongoing_status.error_message == "":
-                ongoing_status.error_message = "Experiment workload is not available!"
-            return ongoing_status
+            ongoing_status.updateErrorMessage("Experiment workload is not available!")
+        return ongoing_status
 
     def getResultsFolder(self) -> Path:
         return self.env.volume_root_directory / "results" / f"{self.experiment.sequence}_{self.experiment.experiment_name}"
@@ -65,6 +68,26 @@ class ExperimentRunner:
         if experiment_directory.exists():
             if len(list(experiment_directory.glob('*.png'))) > 0:
                 return True
+        return False
+
+    # Check that nominal run results are available (if this is not a nominal run)
+    def __nominalResultsAreAvailable(self) -> bool:
+        # Check if this is a nominal run
+        if "nominal" in self.experiment.experiment_name:
+            # if its nominal we can skip the check
+            return True
+        # Check nominal results folder
+        results_directory = self.env.volume_root_directory / "results"
+        seq = self.experiment.sequence
+        nominal_run_name = f"{seq}_{seq}_nominal"
+        nominal_dir = results_directory / nominal_run_name
+        if nominal_dir.exists():
+            # check if keypoints are available
+            kpts_dir = nominal_dir / "raw_outputs" / f"{nominal_run_name}_poses"
+            if kpts_dir.exists():
+                if len(list(kpts_dir.glob("*_kpts.npy"))):
+                    return True
+        # In all the other cases the results are not available
         return False
 
     def __editExperimentRunConfiguration(self):

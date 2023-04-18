@@ -41,3 +41,7 @@ class ExperimentStatus:
             "error_type": self.error_type,
             "error_message": self.error_message
         }
+
+    def updateErrorMessage(self, msg: str, override: bool = False):
+        if self.error_message == "" or override:
+            self.error_message = msg

@@ -15,11 +15,18 @@ patches = [patch for patch in patch_root_directory.iterdir() if patch.is_dir()]
 patches.sort()
 
 # Setup
+CREATE_NOMINAL_RUN = True
 WARMUP_FRAMES = 10
 INJECTION_POINTS_PERCENTAGES = [33, 66]
 
-# Generate PATCHES experiments
+# Init
 experiments = []
+exp_counter = 1
+
+# DEBUG
+sequences = sequences[:1]
+
+# Generate experiments
 for sequence in sequences:
     # Get the steady sequence length (the sequence without the warmup frames)
     camera_path = sequence / "image_0"
@@ -27,6 +34,18 @@ for sequence in sequences:
     if steady_sequence_len <= 0:
         raise IndexError(f"The sequence {sequence.name} is too short!")
 
+    # Create Nominal Run
+    if CREATE_NOMINAL_RUN:
+        experiments.append({
+            "experiment_name": f"{sequence.name}_nominal",
+            "sequence_name": f"{sequence.name}",
+            "failure_type": f"none",
+            "failure_variant": 0,
+            "patch_name": f"",
+            "injection_position": -1
+        })
+
+    # Create Sequence Experiments
     for patch in patches:
         patch_variants = len(list(patch.glob("*.png")))
         for variant in range(patch_variants):
@@ -35,26 +54,15 @@ for sequence in sequences:
                 injection_point = (steady_sequence_len * injection_percentage) // 100
                 # Create the experiment configuration
                 experiments.append({
-                    "experiment_name": f"exp_{str(len(experiments)+1).zfill(4)}",
+                    "experiment_name": f"exp_{str(exp_counter).zfill(4)}",
                     "sequence_name": f"{sequence.name}",
                     "failure_type": f"{patch.name}",
                     "failure_variant": variant,
                     "patch_name": f"{list(patch.glob('*.png'))[variant].name}",
                     "injection_position": WARMUP_FRAMES + injection_point
                 })
-
-
-# Create Nominal Run
-for sequence in sequences:
-    experiments.append({
-        "experiment_name": f"{sequence.name}_nominal",
-        "sequence_name": f"{sequence.name}",
-        "failure_type": f"none",
-        "failure_variant": 0,
-        "patch_name": f"",
-        "injection_position": -1
-    })
-
+                # Increase experiment id
+                exp_counter += 1
 
 # Save
 content = json.dumps(experiments, indent=2, default=str)

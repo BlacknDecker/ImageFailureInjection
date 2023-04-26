@@ -2,12 +2,13 @@ import csv
 import json
 from pathlib import Path
 from statistics import mean
-from typing import List
+from typing import List, Dict
 import pandas as pd
 
 from experiment_runner.EnvironmentParameters import EnvironmentParameters
 from experiment_runner.ExperimentParameters import ExperimentParameters
 from experiment_runner.ExperimentStatus import ExperimentStatus
+from utils.TelegramNotifier import TelegramNotifier
 
 
 class ResultsManager:
@@ -17,6 +18,7 @@ class ResultsManager:
         self.experiments_log_folder = self.env.volume_root_directory / "results" / "run_logs"
         self.experiment_configs = self.__parseConfig(experiments_config)
         self.summary_folder = self.env.volume_root_directory / "results" / "summary"
+        self.notifier = TelegramNotifier(Path.cwd()/"secrets.json")
 
     def createSummary(self, experiment_results: List[ExperimentStatus]) -> None:
         status_s = []
@@ -72,6 +74,8 @@ class ResultsManager:
         status_df.to_csv(self.summary_folder / "status_summary.csv", encoding='utf-8')
         conf_df.to_csv(self.summary_folder / "configuration_summary.csv", encoding='utf-8')
         metric_df.to_csv(self.summary_folder / "metrics_summary.csv", encoding='utf-8')
+        ### Notify User ###
+        self.__notifyUser(status_s)
         # Done
 
     ### UTILS ###
@@ -158,3 +162,16 @@ class ResultsManager:
                                          'value': False,
                                          'format': format_yellow
                                      })
+
+    def __notifyUser(self, status_list: List[Dict]):
+        # Get required Info:
+        total_exps = len(status_list)
+        prepared_exps = [exp["prepared"] for exp in status_list].count(True)
+        ran_exp = [exp["run"] for exp in status_list].count(True)
+        # Create Notification message
+        msg = "*BATCH RUN TERMINATED*\n"
+        msg += f"_Experiments:_ {total_exps}\n"
+        msg += f"_Prepared:_ {prepared_exps}\n"
+        msg += f"_Completed:_ {ran_exp}\n"
+        # Notify
+        self.notifier.notify(msg)

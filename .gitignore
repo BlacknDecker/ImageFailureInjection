@@ -19,3 +19,4 @@ sequence_injectors/patches/rain/*
 
 experiment_runner/test_env
 test_*
+secrets*

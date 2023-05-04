@@ -2,8 +2,7 @@ import os
 import logging
 import random
 import cv2
-import injectors.automold.Automold as am
-import injectors.automold.Helpers as hp
+import old_scripts.injectors.automold.Automold as am
 
 from utils.FilePathManager import FilePathManager
 

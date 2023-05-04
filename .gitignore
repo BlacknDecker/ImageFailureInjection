@@ -1,8 +1,8 @@
-out
+old_scripts/out
 .idea
 __pycache__
-injectors/lensDirt/*
-!injectors/lensDirt/LensDirt-1.png
+old_scripts/injectors/lensDirt/*
+!old_scripts/injectors/lensDirt/LensDirt-1.png
 test_injectors.py
 test_patching
 test_sequence_injector.py

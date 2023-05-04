@@ -2,7 +2,7 @@ import os
 import logging
 import cv2
 
-import injectors.automold.Automold as am
+import old_scripts.injectors.automold.Automold as am
 from utils.FilePathManager import FilePathManager
 
 

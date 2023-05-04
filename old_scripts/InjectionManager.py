@@ -1,29 +1,26 @@
 import os
 import logging
-import shutil
 
-from injectors.BandingInjector import BandingInjector
-from injectors.BlurInjector import BlurInjector
-from injectors.BreakageInjector import BreakageInjector
-from injectors.BrightnessInjector import BrightnessInjector
-from injectors.ChromaticAberrationInjector import ChromaticAberrationInjector
-from injectors.CondensationInjector import CondensationInjector
-from injectors.DeadPixelsInjector import DeadPixelsInjector
-from injectors.DirtInjector import DirtInjector
-from injectors.FlareInjector import FlareInjector
-from injectors.GrayscaleInjector import GrayscaleInjector
-from injectors.IceInjector import IceInjector
-from injectors.NodemosInjector import NodemosInjector
-from injectors.NoiseInjector import NoiseInjector
-from injectors.RainInjector import RainInjector
-from injectors.RandomRainInjector import RandomRainInjector
-from injectors.SharpnessInjector import SharpnessInjector
+from old_scripts.injectors.BandingInjector import BandingInjector
+from old_scripts.injectors.BlurInjector import BlurInjector
+from old_scripts.injectors.BreakageInjector import BreakageInjector
+from old_scripts.injectors.BrightnessInjector import BrightnessInjector
+from old_scripts.injectors.ChromaticAberrationInjector import ChromaticAberrationInjector
+from old_scripts.injectors.CondensationInjector import CondensationInjector
+from old_scripts.injectors.DeadPixelsInjector import DeadPixelsInjector
+from old_scripts.injectors.DirtInjector import DirtInjector
+from old_scripts.injectors.FlareInjector import FlareInjector
+from old_scripts.injectors.IceInjector import IceInjector
+from old_scripts.injectors.NodemosInjector import NodemosInjector
+from old_scripts.injectors.NoiseInjector import NoiseInjector
+from old_scripts.injectors.RainInjector import RainInjector
+from old_scripts.injectors.SharpnessInjector import SharpnessInjector
 
 
 class InjectionManager:
 
     def __init__(self):
-        self.output_folder = os.path.join(os.getcwd(), "output")
+        self.output_folder = os.path.join(os.getcwd(), "../output")
         self.injectors = {
             "brightness": BrightnessInjector(),
             "blur": BlurInjector(),

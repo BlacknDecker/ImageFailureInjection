@@ -3,6 +3,8 @@ from typing import List, Optional
 
 from PIL import Image
 
+from patch_augmentation.PatchAugmentor import PatchAugmentor
+
 
 class PatchLoader:
 
@@ -16,7 +18,11 @@ class PatchLoader:
             patch_dir = self.patches_dir / failure_type
             patch_variants_path = list(patch_dir.glob("*.png"))
             patch = Image.open(patch_variants_path[failure_variant])
-            patch = patch.convert(calibration_frame.mode).resize(calibration_frame.size)
+            # augment patch
+            augmentor = PatchAugmentor(calibration_frame.height, calibration_frame.width)   # TODO: move to the constructor to increase performance
+            augmented = augmentor.augment(patch, failure_type)
+            # convert color mode
+            patch = augmented.convert(calibration_frame.mode)
             return patch
 
     ### Utils ###

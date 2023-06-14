@@ -1,11 +1,20 @@
 import json
+import random
 from pathlib import Path
+
+import numpy as np
 
 from experiment_runner.EnvironmentParameters import EnvironmentParameters
 from experiment_runner.ExperimentsController import ExperimentsController
 from utils.Timer import Timer
 
+
+# CONFIG
+SEED = 42069
+
 # SETUP
+random.seed(SEED)
+np.random.seed(SEED)
 env = EnvironmentParameters()
 env.volume_root_directory = Path.cwd() / "experiment_runner" / "test_env"
 env.sequences_directory = env.volume_root_directory / "dataset" / "sequences"

@@ -129,7 +129,7 @@ class ExperimentRunner:
         # Done
 
     def __launchDocker(self, ongoing_status: ExperimentStatus) -> ExperimentStatus:
-        cmd = f'docker run --rm -v "{self.env.volume_root_directory}":/inj_data/ --gpus all odometry'
+        cmd = f'docker run --rm -v "{self.env.volume_root_directory}":/inj_data/ --gpus all odometry_v2'
         try:
             completed_process = subprocess.run(cmd, stderr=subprocess.PIPE, shell=True, text=True)
         except Exception as e:

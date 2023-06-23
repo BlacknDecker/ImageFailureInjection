@@ -1,5 +1,6 @@
 import json
 import os
+import shutil
 from pathlib import Path
 from typing import List, TypedDict, Union, Optional
 
@@ -53,6 +54,8 @@ class ExperimentsController:
             with open(self.experiments_log_folder/f"{status.experiment_name}.json", "w") as f:
                 f.write(json.dumps(status.todict(), indent=4, default=str))
             run_status.append(status)
+        # Remove raw data to save space
+        self.__removeRawData()
         return run_status
 
     def runExperiments(self, experiments_name: List[str] = None) -> List[ExperimentStatus]:
@@ -62,6 +65,8 @@ class ExperimentsController:
         experiments_status = []
         for experiment in experiments:
             experiments_status.append(self.__runExperiment(experiment, remove_workload=True))
+        # Remove raw data to save space
+        self.__removeRawData()
         return experiments_status
 
     ### Utils ###
@@ -105,4 +110,11 @@ class ExperimentsController:
             f.write(json.dumps(run_status.todict(), indent=4, default=str))
         # Return result
         return run_status
+
+    def __removeRawData(self) -> None:
+        results_dir = self.env.volume_root_directory / "results"
+        for file in results_dir.iterdir():
+            raw_out_folder = file/"raw_outputs"
+            if raw_out_folder.exists():
+                shutil.rmtree(raw_out_folder)
 

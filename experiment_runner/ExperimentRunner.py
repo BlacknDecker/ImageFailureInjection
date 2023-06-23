@@ -32,6 +32,7 @@ class ExperimentRunner:
                                     self.experiment.injection_position,
                                     self.experiment.failure_type,
                                     self.experiment.failure_variant)
+            self.__collectPatchSample()
         except Exception as e:
             status.error_message = str(e)
         else:
@@ -165,3 +166,13 @@ class ExperimentRunner:
                 shutil.copyfile(frames[-1], sample_folder/sample_name)
             # Delete workload folder
             shutil.rmtree(experiment_directory)
+
+    def __collectPatchSample(self):
+        # Move patch samples into the results folder
+        src_folder = self.env.volume_root_directory / "patches" / "summary"
+        dst_folder = self.env.volume_root_directory / "results" / "patch_samples"
+        os.makedirs(dst_folder, exist_ok=True)
+        for patch_sample in src_folder.glob('*.png'):
+            shutil.move(patch_sample, dst_folder)
+        # Remove summary folder from patches dir
+        shutil.rmtree(src_folder)

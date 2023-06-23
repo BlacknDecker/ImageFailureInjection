@@ -32,6 +32,7 @@ class SequenceInjector:
         self.frame_original_colormode = ""
         # Injector Utilities
         self.patch_loader = PatchLoader(patch_src)
+        self.patch_summary_dir = patch_src / "summary"
 
     def injectSequence(self, experiment_name: str, injection_position: int, failure_type: str,
                        failure_variant: int) -> None:
@@ -39,7 +40,7 @@ class SequenceInjector:
             loading_frames = self.__loadFrames(executor)
             if injection_position >= 0:
                 self.__markFramesToInject(loading_frames, injection_position)
-            processing_frames = self.__processFrames(executor, loading_frames, failure_type, failure_variant)
+            processing_frames = self.__processFrames(executor, loading_frames, failure_type, failure_variant, experiment_name)
             # Save
             experiment_dir = self.__createExperimentFolder(experiment_name)
             saving_frames = self.__saveExperimentFrames(executor, processing_frames, experiment_dir)
@@ -71,7 +72,7 @@ class SequenceInjector:
                 frame_info["inject"] = True
 
     def __processFrames(self, executor: ThreadPoolExecutor, loading_frames: Dict[Future, FutureInfo], failure_type: str,
-                        failure_variant: int) -> Dict[Future, FutureInfo]:
+                        failure_variant: int, experiment_name: str) -> Dict[Future, FutureInfo]:
         processing = {}
         # Wait first loaded image to get info
         future_frame, _ = wait(loading_frames, return_when=FIRST_COMPLETED)
@@ -81,6 +82,9 @@ class SequenceInjector:
         patch = None
         if injector.injector_type == "PATCH":
             patch = self.patch_loader.loadPatch(failure_type, failure_variant, calibration_frame)
+            # Save patch sample
+            os.makedirs(self.patch_summary_dir, exist_ok=True)
+            patch.save(self.patch_summary_dir/f"patch_{experiment_name}.png")
         # Process frames
         for future_frame in as_completed(loading_frames):
             frame_info = loading_frames[future_frame]

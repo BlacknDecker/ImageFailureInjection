@@ -6,6 +6,7 @@ import numpy as np
 
 from experiment_runner.EnvironmentParameters import EnvironmentParameters
 from experiment_runner.ExperimentsController import ExperimentsController
+from experiment_runner.ResultsManager import ResultsManager
 from utils.Timer import Timer
 
 
@@ -33,7 +34,7 @@ controller = ExperimentsController(env, experiments_conf)
 
 #### Prepare and Run #########
 with Timer("Experiments Preparation"):
-    prepared = controller.prepareExperiments(["exp_0023", "exp_0033", "exp_0045", "exp_0115", "exp_0119"])
+    prepared = controller.prepareExperiments(["04_nominal", "exp_0089"])
     # prepared = controller.prepareExperiments(["exp_0115"])
 
 # Show results
@@ -41,9 +42,14 @@ print(" EXPERIMENTS PREPARATION ".center(40, "#"))
 for res in prepared:
     print(res)
 
-# with Timer("Experiments Run"):
-#     results = controller.runPreparedExperiments(prepared)
-# # Show results
-# print(" EXPERIMENTS RUN ".center(40, "#"))
-# for res in results:
-#     print(res)
+with Timer("Experiments Run"):
+    results = controller.runPreparedExperiments(prepared)
+# Show results
+print(" EXPERIMENTS RUN ".center(40, "#"))
+for res in results:
+    print(res)
+# CREATE SUMMARY
+print("Creating Summary...")
+res_m = ResultsManager(env, experiments_conf)
+res_m.createSummary(results)
+print("Done!")

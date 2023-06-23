@@ -40,7 +40,7 @@ class ExperimentsController:
             preparation_status.append(status)
         return preparation_status
 
-    def runPreparedExperiments(self, ongoing_experiments: List[ExperimentStatus], remove_workload=False) -> List[ExperimentStatus]:
+    def runPreparedExperiments(self, ongoing_experiments: List[ExperimentStatus], remove_workload=True) -> List[ExperimentStatus]:
         # Run the experiments
         run_status = []
         for ongoing_status in ongoing_experiments:

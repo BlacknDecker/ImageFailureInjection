@@ -17,7 +17,8 @@ SEED = 42069
 random.seed(SEED)
 np.random.seed(SEED)
 env = EnvironmentParameters()
-env.volume_root_directory = Path.cwd() / "experiment_runner" / "test_env"
+# env.volume_root_directory = Path.cwd() / "experiment_runner" / "test_env"
+env.volume_root_directory = Path.cwd() / "../inj_volume"
 env.sequences_directory = env.volume_root_directory / "dataset" / "sequences"
 env.patch_root_directory = env.volume_root_directory / "patches"
 

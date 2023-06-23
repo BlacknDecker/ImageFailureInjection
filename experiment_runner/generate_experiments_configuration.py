@@ -5,7 +5,8 @@ from pathlib import Path
 ### Generates the experiments_config.json file ###
 
 # Init
-base_directory = Path.cwd() / "test_env"
+# base_directory = Path.cwd() / "test_env"
+base_directory = Path.cwd() / "../inj_volume"
 sequences_directory = base_directory / "dataset" / "sequences"
 patch_root_directory = base_directory / "patches"
 # Get info

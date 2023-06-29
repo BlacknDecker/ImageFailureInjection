@@ -7,11 +7,13 @@ import numpy as np
 from experiment_runner.EnvironmentParameters import EnvironmentParameters
 from experiment_runner.ExperimentsController import ExperimentsController
 from experiment_runner.ResultsManager import ResultsManager
+from experiment_runner.VOModel import VOModel
 from utils.Timer import Timer
 
 
 # CONFIG
 SEED = 42069
+VO_MODEL = VOModel.RETRAINED
 
 # SETUP
 random.seed(SEED)
@@ -28,7 +30,7 @@ experiments_conf = env.volume_root_directory / "experiments_config.json"
 controller = ExperimentsController(env, experiments_conf)
 
 #### Run experiments #######
-# results = controller.runExperiments()
+# results = controller.runExperiments(VO_MODEL)
 # # Show results
 # for res in results:
 #     print(res)
@@ -44,7 +46,7 @@ for res in prepared:
     print(res)
 
 with Timer("Experiments Run"):
-    results = controller.runPreparedExperiments(prepared)
+    results = controller.runPreparedExperiments(prepared, VO_MODEL)
 # Show results
 print(" EXPERIMENTS RUN ".center(40, "#"))
 for res in results:

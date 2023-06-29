@@ -8,6 +8,7 @@ from experiment_runner.EnvironmentParameters import EnvironmentParameters
 from experiment_runner.ExperimentParameters import ExperimentParameters
 from experiment_runner.ExperimentRunner import ExperimentRunner
 from experiment_runner.ExperimentStatus import ExperimentStatus
+from experiment_runner.VOModel import VOModel
 from utils.Timer import Timer
 from utils.TimerOneLine import TimerOneLine
 
@@ -41,7 +42,7 @@ class ExperimentsController:
             preparation_status.append(status)
         return preparation_status
 
-    def runPreparedExperiments(self, ongoing_experiments: List[ExperimentStatus], remove_workload=True) -> List[ExperimentStatus]:
+    def runPreparedExperiments(self, ongoing_experiments: List[ExperimentStatus], vo_model:VOModel, remove_workload=True) -> List[ExperimentStatus]:
         # Run the experiments
         run_status = []
         for ongoing_status in ongoing_experiments:
@@ -49,20 +50,20 @@ class ExperimentsController:
             runner = ExperimentRunner(self.env, experiment)
             # Run experiment
             with TimerOneLine(f"Run: {ongoing_status.experiment_name}"):
-                status = runner.run(ongoing_status, remove_workload)
+                status = runner.run(ongoing_status, vo_model, remove_workload)
             # Save results
             with open(self.experiments_log_folder/f"{status.experiment_name}.json", "w") as f:
                 f.write(json.dumps(status.todict(), indent=4, default=str))
             run_status.append(status)
         return run_status
 
-    def runExperiments(self, experiments_name: List[str] = None) -> List[ExperimentStatus]:
+    def runExperiments(self, vo_model:VOModel, experiments_name: List[str] = None) -> List[ExperimentStatus]:
         # Select Experiments
         experiments = self.__selectExperiments(experiments_name)
         # Run selected experiments
         experiments_status = []
         for experiment in experiments:
-            experiments_status.append(self.__runExperiment(experiment, remove_workload=True))
+            experiments_status.append(self.__runExperiment(experiment, vo_model, remove_workload=True))
         return experiments_status
 
     ### Utils ###
@@ -95,12 +96,12 @@ class ExperimentsController:
     def __getExperimentByName(self, experiment_name: str) -> ExperimentParameters:
         return next(filter(lambda x: x.experiment_name == experiment_name, self.experiments))
 
-    def __runExperiment(self, experiment: ExperimentParameters, remove_workload: bool) -> ExperimentStatus:
+    def __runExperiment(self, experiment: ExperimentParameters, vo_model:VOModel, remove_workload: bool) -> ExperimentStatus:
         runner = ExperimentRunner(self.env, experiment)
         preparation_status = runner.createExperimentWorkload()
         # Run experiment
         with TimerOneLine(f"Run: {preparation_status.experiment_name}"):
-            run_status = runner.run(preparation_status, remove_workload)
+            run_status = runner.run(preparation_status, vo_model, remove_workload)
         # Save results
         with open(self.experiments_log_folder/f"{run_status.experiment_name}_status.json", "w") as f:
             f.write(json.dumps(run_status.todict(), indent=4, default=str))

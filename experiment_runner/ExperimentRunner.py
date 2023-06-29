@@ -7,6 +7,7 @@ from pathlib import Path
 from experiment_runner.EnvironmentParameters import EnvironmentParameters
 from experiment_runner.ExperimentParameters import ExperimentParameters
 from experiment_runner.ExperimentStatus import ExperimentStatus
+from experiment_runner.VOModel import VOModel
 from sequence_injectors.SequenceInjector import SequenceInjector
 
 
@@ -39,14 +40,14 @@ class ExperimentRunner:
             status.prepared = True
         return status
 
-    def run(self, ongoing_status: ExperimentStatus, remove_workload=False) -> ExperimentStatus:
+    def run(self, ongoing_status: ExperimentStatus, vo_model:VOModel, remove_workload=False) -> ExperimentStatus:
         if self.__experimentWorkloadIsAvailable():
             if self.__nominalResultsAreAvailable():
                 # Run the experiment
                 try:
                     self.__editExperimentRunConfiguration()
                     self.__editKittiRunConfiguration()
-                    run_status = self.__launchDocker(ongoing_status)
+                    run_status = self.__launchDocker(ongoing_status, vo_model)
                     if remove_workload:
                         self.__freeWorkload()
                     return run_status
@@ -128,8 +129,8 @@ class ExperimentRunner:
             f.writelines(run_config_lines)
         # Done
 
-    def __launchDocker(self, ongoing_status: ExperimentStatus) -> ExperimentStatus:
-        cmd = f'docker run --rm -v "{self.env.volume_root_directory}":/inj_data/ --gpus all odometry_v2'
+    def __launchDocker(self, ongoing_status: ExperimentStatus, vo_model:VOModel) -> ExperimentStatus:
+        cmd = f'docker run --rm -v "{self.env.volume_root_directory}":/inj_data/ --gpus all {vo_model}'
         try:
             completed_process = subprocess.run(cmd, stderr=subprocess.PIPE, shell=True, text=True)
         except Exception as e:

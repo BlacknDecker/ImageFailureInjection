@@ -10,6 +10,7 @@ from distutils.dir_util import copy_tree
 ##############################################
 
 STORAGE_FOLDER = Path("/data/puccetti/vo_experiments/")
+BACKUP_FOLDER = STORAGE_FOLDER / "backup"
 RESULTS_FOLDER = Path("/home/puccetti/git/inj_volume/results/")
 
 
@@ -53,7 +54,7 @@ campaign_storage_path = STORAGE_FOLDER / archive_str
 copy_tree(str(RESULTS_FOLDER), str(campaign_storage_path))
 # Compress results
 print("Compressing results folder...")
-archive_path = make_tarfile(archive_str, RESULTS_FOLDER, STORAGE_FOLDER)
+archive_path = make_tarfile(archive_str, RESULTS_FOLDER, BACKUP_FOLDER)
 print(f"Saved archive: {archive_path}")
 print(f"Consultation Copy: {str(campaign_storage_path)}")
 # Change permissions and ownership

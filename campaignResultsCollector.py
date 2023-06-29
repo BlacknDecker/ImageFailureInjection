@@ -33,6 +33,11 @@ def make_tarfile(archive_name: str, to_archive: Path, destination: Path) -> Path
     return archive_path
 
 
+def setPathPrivilegeAndOwnership(data_path: Path):
+    os.chmod(data_path, mode=0o775)
+    shutil.chown(data_path, user="puccetti", group="puccetti")
+
+
 ### Main ###
 # Check if user has privileges
 check_privileges()
@@ -51,3 +56,6 @@ print("Compressing results folder...")
 archive_path = make_tarfile(archive_str, RESULTS_FOLDER, STORAGE_FOLDER)
 print(f"Saved archive: {archive_path}")
 print(f"Consultation Copy: {str(campaign_storage_path)}")
+# Change permissions and ownership
+setPathPrivilegeAndOwnership(archive_path)
+setPathPrivilegeAndOwnership(campaign_storage_path)

@@ -2,6 +2,7 @@ import os
 import shutil
 import tarfile
 from pathlib import Path
+from distutils.dir_util import copy_tree
 
 ##############################################
 # Script to collect all the results obtained
@@ -41,7 +42,12 @@ print(f"Results folder: {RESULTS_FOLDER}")
 removeRawData(RESULTS_FOLDER)
 # Select archive name
 archive_str = input("Campaign name (used for the Archive): ")
+# Create a copy in the storage for easy access
+print("Coping results folder in the storage...")
+campaign_storage_path = STORAGE_FOLDER / archive_str
+copy_tree(str(RESULTS_FOLDER), str(campaign_storage_path))
 # Compress results
 print("Compressing results folder...")
 archive_path = make_tarfile(archive_str, RESULTS_FOLDER, STORAGE_FOLDER)
 print(f"Saved archive: {archive_path}")
+print(f"Consultation Copy: {str(campaign_storage_path)}")

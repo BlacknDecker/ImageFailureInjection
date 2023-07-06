@@ -2,6 +2,12 @@ import subprocess
 from pathlib import Path
 
 
+##############################################
+# Script to create a plot of comparison
+#  between multiple experiment (in the same campaign)
+##############################################
+
+
 # Config
 # ENV_FOLDER = Path.cwd() / "experiment_runner" / "test_env"
 ENV_FOLDER = Path.cwd() / "../inj_volume/"

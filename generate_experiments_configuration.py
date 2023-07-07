@@ -80,7 +80,8 @@ for sequence in sequences:
             "failure_type": f"none",
             "failure_variant": 0,
             "patch_name": f"",
-            "injection_position": -1
+            "injection_position": -1,
+            "sequence_size": len(list(camera_path.glob("*.png")))
         })
 
     # Create Sequence Experiments
@@ -98,7 +99,8 @@ for sequence in sequences:
                     "failure_type": f"{patch.name}",
                     "failure_variant": variant,
                     "patch_name": f"{list(patch.glob('*.png'))[variant].name}",
-                    "injection_position": WARMUP_FRAMES + injection_point
+                    "injection_position": WARMUP_FRAMES + injection_point,
+                    "sequence_size": len(list(camera_path.glob("*.png")))
                 })
                 # Increase experiment id
                 exp_counter += 1

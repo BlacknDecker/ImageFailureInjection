@@ -1,11 +1,16 @@
+import itertools
 import json
+from math import ceil
 from pathlib import Path
+from typing import List
 
+##############################################
+# Generates the experiments_config.json file
+##############################################
 
-### Generates the experiments_config.json file ###
 
 # Init
-# base_directory = Path.cwd() / "test_env"
+# base_directory = Path.cwd() / "experiment_runner" / "test_env"  # Test only
 base_directory = Path.cwd() / "../inj_volume"
 sequences_directory = base_directory / "dataset" / "sequences"
 patch_root_directory = base_directory / "patches"
@@ -18,12 +23,46 @@ patches.sort()
 # Setup
 CREATE_NOMINAL_RUN = True
 WARMUP_FRAMES = 10
-INJECTION_POINTS_PERCENTAGES = [33, 66]
+INJECTION_POINTS_PERCENTAGES = [33]  # Injection at 1/3 of the sequence
+MAX_VARIANTS = None     # Set max number of experiments for failure type, cycling on the variants, default=MAX(len(variants))
 
-# Init
+# Setup
 experiments = []
 exp_counter = 1
 
+
+### UTILS ###
+
+def __getMaxVariants(fail_types: List[Path]) -> int:
+    variants = []
+    for patch in fail_types:
+        patch_vars = len(list(patch.glob("*.png")))
+        variants.append(patch_vars)
+    return max(variants)
+
+
+def __getFailureExpVariants(failure: Path, max_variants: int) -> List[int]:
+    fail_var_n = len(list(failure.glob("*.png")))
+    reps = ceil(max_variants / fail_var_n)
+    variants = list(range(fail_var_n))
+    variants = list(itertools.repeat(variants, reps))
+    variants = list(itertools.chain.from_iterable(variants))
+    return variants[:max_variants]  # cut at required len
+
+
+def getExperimentsFailureVariants(fail_types: List[Path], max_variants: int = None) -> dict:
+    if not max_variants:
+        max_variants = __getMaxVariants(fail_types)
+    exps = {}
+    for fail in fail_types:
+        exps[fail.name] = __getFailureExpVariants(fail, max_variants)
+    return exps
+
+
+### ### ### ###
+
+
+### RUN ###
 
 # Generate experiments
 for sequence in sequences:
@@ -45,9 +84,10 @@ for sequence in sequences:
         })
 
     # Create Sequence Experiments
+    failure_variants = getExperimentsFailureVariants(patches, MAX_VARIANTS)
     for patch in patches:
-        patch_variants = len(list(patch.glob("*.png")))
-        for variant in range(patch_variants):
+        patch_variants = failure_variants[patch.name]
+        for variant in patch_variants:
             for injection_percentage in INJECTION_POINTS_PERCENTAGES:
                 # Calculate the injection point
                 injection_point = (steady_sequence_len * injection_percentage) // 100
@@ -71,4 +111,3 @@ with open(save_path, "w") as f:
 
 # print(content)
 print(f"TOTAL EXPERIMENTS: {len(experiments)}")
-

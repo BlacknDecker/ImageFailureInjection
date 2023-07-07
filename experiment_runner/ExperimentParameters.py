@@ -7,6 +7,7 @@ class ExperimentParameters:
     failure_variant: int
     patch_name: str
     injection_position: int
+    sequence_length: int
 
     def __init__(self, raw_config:dict):
         self.experiment_name = raw_config["experiment_name"]
@@ -15,4 +16,5 @@ class ExperimentParameters:
         self.failure_variant = raw_config["failure_variant"]
         self.patch_name = raw_config["patch_name"]
         self.injection_position = raw_config["injection_position"]
+        self.sequence_length = raw_config["sequence_size"]
 

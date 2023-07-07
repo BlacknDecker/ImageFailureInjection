@@ -46,7 +46,8 @@ class ResultsManager:
                 "failure": exp_config.failure_type,
                 "variant": exp_config.failure_variant,
                 "patch": exp_config.patch_name,
-                "injection_frame": exp_config.injection_position
+                "injection_frame": exp_config.injection_position,
+                "sequence_length": exp_config.sequence_length
             }
             conf_s.append(conf_row)
             # METRICS

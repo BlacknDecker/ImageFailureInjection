@@ -11,7 +11,7 @@ from typing import List
 
 # Init
 # base_directory = Path.cwd() / "experiment_runner" / "test_env"  # Test only
-base_directory = Path.cwd() / "../inj_volume"
+base_directory = Path("/data/puccetti/inj_volume/")
 sequences_directory = base_directory / "dataset" / "sequences"
 patch_root_directory = base_directory / "patches"
 # Get info

@@ -11,7 +11,7 @@ from distutils.dir_util import copy_tree
 
 STORAGE_FOLDER = Path("/data/puccetti/vo_experiments/")
 BACKUP_FOLDER = STORAGE_FOLDER / "backup"
-RESULTS_FOLDER = Path("/home/puccetti/git/inj_volume/results/")
+RESULTS_FOLDER = Path("/data/puccetti/inj_volume/results/")
 
 
 ### Utilities ###

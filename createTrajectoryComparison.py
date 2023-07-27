@@ -10,7 +10,7 @@ from pathlib import Path
 
 # Config
 # ENV_FOLDER = Path.cwd() / "experiment_runner" / "test_env"
-ENV_FOLDER = Path.cwd() / "../inj_volume/"
+ENV_FOLDER = Path("/data/puccetti/inj_volume/")
 # OUT_FOLDER = Path.cwd()/"test_plotting"
 
 GT_POSES_FOLDER = ENV_FOLDER / "dataset" / "poses"

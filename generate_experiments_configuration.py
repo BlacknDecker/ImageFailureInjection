@@ -25,10 +25,14 @@ CREATE_NOMINAL_RUN = True
 WARMUP_FRAMES = 10
 INJECTION_POINTS_PERCENTAGES = [33]  # Injection at 1/3 of the sequence
 MAX_VARIANTS = None     # Set max number of experiments for failure type, cycling on the variants, default=MAX(len(variants))
+SINGLE_SEQUENCE = None  # Specify a sequence number (integer) to create experiments only for a given sequence
 
 # Setup
 experiments = []
 exp_counter = 1
+# Cut sequences if requested
+if SINGLE_SEQUENCE is not None and SINGLE_SEQUENCE < len(sequences):
+    sequences = [sequences[SINGLE_SEQUENCE]]
 
 
 ### UTILS ###

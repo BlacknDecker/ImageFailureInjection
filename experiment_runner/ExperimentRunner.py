@@ -4,7 +4,6 @@ import shutil
 import subprocess
 from pathlib import Path
 
-from experiment_runner.AssertionHandler import AssertionHandler
 from experiment_runner.EnvironmentParameters import EnvironmentParameters
 from experiment_runner.ExperimentParameters import ExperimentParameters
 from experiment_runner.ExperimentStatus import ExperimentStatus
@@ -51,9 +50,6 @@ class ExperimentRunner:
                     run_status = self.__launchDocker(ongoing_status, vo_model)
                     if remove_workload:
                         self.__freeWorkload()
-                    ######### vvvDEBUGvvv ############
-                    AssertionHandler.testAssertion(run_status.result_folder.exists())   # Test the result folder exists
-                    ######### ^^^DEBUG^^^ ############
                     return run_status
                 except Exception as e:
                     ongoing_status.error_message = str(e)
@@ -134,7 +130,7 @@ class ExperimentRunner:
         # Done
 
     def __launchDocker(self, ongoing_status: ExperimentStatus, vo_model:VOModel) -> ExperimentStatus:
-        cmd = f'docker run --rm -v "{self.env.volume_root_directory}":/inj_data/ --gpus all {vo_model}'
+        cmd = f'docker run --rm -v "{self.env.volume_root_directory}":/inj_data/ --gpus all {vo_model.value}'
         try:
             completed_process = subprocess.run(cmd, stderr=subprocess.PIPE, shell=True, text=True)
         except Exception as e:
@@ -153,9 +149,6 @@ class ExperimentRunner:
                 ongoing_status.run_status = True
         # Always add the results path
         ongoing_status.result_folder = self.getResultsFolder()
-        ######### vvvDEBUGvvv ############
-        AssertionHandler.testAssertion(ongoing_status.result_folder.exists())   # Test the result folder exists
-        ######### ^^^DEBUG^^^ ############
         return ongoing_status
 
     def __freeWorkload(self):

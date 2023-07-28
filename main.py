@@ -13,7 +13,7 @@ from utils.Timer import Timer
 
 # CONFIG
 SEED = 42069
-VO_MODEL = VOModel.RETRAINED
+VO_MODEL = VOModel.BASE
 VOLUME_PATH = Path("/data/puccetti/inj_volume/")
 SELECTED_EXPERIMENTS = ["04_nominal", "exp_0324"]   # None for ALL
 
